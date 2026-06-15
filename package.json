@@ -1,6 +1,6 @@
 {
-  "name": "workflow",
-  "version": "0.1.0",
+  "name": "FlowCraft - AI Powered No-Code Web Scraping Automation tool",
+  "version": "0.1.2",
   "private": true,
   "scripts": {
     "dev": "next dev",

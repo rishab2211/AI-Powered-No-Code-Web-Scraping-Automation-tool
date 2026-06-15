@@ -4,8 +4,8 @@ import { Toaster } from "sonner";
 import AppProvider from "@/components/provider/AppProvider";
 
 export const metadata: Metadata = {
-  title: "Workflow automation",
-  description: "workflow animation tool",
+  title: "FlowCraft",
+  description: "AI Powered No-Code Web Scraping Automation tool",
 };
 
 export default function RootLayout({

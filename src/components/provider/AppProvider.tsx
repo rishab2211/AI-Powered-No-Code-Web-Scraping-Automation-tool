@@ -10,7 +10,7 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <NextTopLoader color="#10b981" height={5}   />
+      <NextTopLoader color="#10b981" height={5} showSpinner={false}   />
       
         {children}
 
