@@ -14,9 +14,11 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { SignedIn, UserButton } from "@clerk/nextjs";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import React from "react";
+import { LogOutIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 function formatPathname(pathname: string | null): string {
   if (!pathname || pathname === "/") return "Home";
@@ -26,6 +28,22 @@ function formatPathname(pathname: string | null): string {
 
 export default function layout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
+
+  async function handleLogout() {
+    try {
+      const res = await fetch("/api/auth/logout", { method: "POST" });
+      if (res.ok) {
+        router.push("/sign-in");
+        router.refresh();
+      } else {
+        toast.error("Logout failed. Please try again.");
+      }
+    } catch {
+      toast.error("Logout failed. Please try again.");
+    }
+  }
+
   return (
     <SidebarProvider
       style={
@@ -56,9 +74,15 @@ export default function layout({ children }: { children: React.ReactNode }) {
               </Breadcrumb>
             </div>
             <div>
-              <SignedIn>
-                <UserButton />
-              </SignedIn>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleLogout}
+                title="Log out"
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <LogOutIcon className="size-5" />
+              </Button>
             </div>
           </header>
           <main className="flex-1 overflow-auto no-scrollbar">

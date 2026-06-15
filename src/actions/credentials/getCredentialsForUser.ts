@@ -1,15 +1,16 @@
 "use server"
 
 import prisma from "@/lib/prisma";
-import { auth } from "@clerk/nextjs/server"
+import { getServerSession } from "@/lib/auth";
 
 
 export const GetCredentialsForUser = async () => {
     try {
-        const { userId } = await auth();
-        if (!userId) {
+        const session = await getServerSession();
+        if (!session?.userId) {
             throw new Error("Unauthenticated")
         }
+        const userId = session.userId;
 
         const credentials = await prisma.credential.findMany({
             where: { userId: userId },

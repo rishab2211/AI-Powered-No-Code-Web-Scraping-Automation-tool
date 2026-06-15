@@ -1,7 +1,7 @@
 import { Period } from "@/app/types/analytics";
 import { PeriodToDateRange } from "@/lib/helper";
 import prisma from "@/lib/prisma";
-import { auth } from "@clerk/nextjs/server";
+import { getServerSession } from "@/lib/auth";
 import { eachDayOfInterval, format } from "date-fns";
 import { Stats } from "./getWorkflowExecutionStats";
 import { ExecutionPhaseStatus } from "@/app/types/Workflows";
@@ -11,10 +11,11 @@ export async function GetCreditsUsageInPeriod(period: Period) {
     try {
 
         // authenticate user
-        const { userId } = await auth();
-        if (!userId) {
+        const session = await getServerSession();
+        if (!session?.userId) {
             throw new Error("Unauthenticated");
         }
+        const userId = session.userId;
 
         // gets first and last day of the month
         const dateRange = PeriodToDateRange(period);

@@ -3,7 +3,7 @@
 import { symmetricEncrypt } from "@/lib/encryption";
 import prisma from "@/lib/prisma";
 import { createCredentialSchema, createCredentialSchemaType } from "@/schema/credential"
-import { auth } from "@clerk/nextjs/server";
+import { getServerSession } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 
 export const CreateCredential = async (form: createCredentialSchemaType) => {
@@ -12,10 +12,11 @@ export const CreateCredential = async (form: createCredentialSchemaType) => {
         throw new Error("Invalid form data");
     }
 
-    const { userId } = await auth();
-    if (!userId) {
+    const session = await getServerSession();
+    if (!session?.userId) {
         throw new Error("Unauthenticated");
     }
+    const userId = session.userId;
 
     // Encrypt value
     const encrypttedValue = symmetricEncrypt(data.value);

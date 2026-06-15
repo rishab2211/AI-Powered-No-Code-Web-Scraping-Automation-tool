@@ -1,12 +1,13 @@
 "use server"
 import { PackId } from "@/app/types/billing";
-import { auth } from "@clerk/nextjs/server";
+import { getServerSession } from "@/lib/auth";
 
 export async function PurchaseCredits(packId : PackId) {
-    const {userId} = await auth();
-    if(!userId){
+    const session = await getServerSession();
+    if(!session?.userId){
         throw new Error("Unauthenticated")
     }
+    const userId = session.userId;
 
     
 }

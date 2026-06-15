@@ -3,16 +3,17 @@ import { Period } from "@/app/types/analytics";
 import { WorkflowExecutionStatus } from "@/app/types/Workflows";
 import { PeriodToDateRange } from "@/lib/helper";
 import prisma from "@/lib/prisma";
-import { auth } from "@clerk/nextjs/server";
+import { getServerSession } from "@/lib/auth";
 
 export async function GetStatsCardsValues(selectedPeriod: Period) {
     try {
 
         // authenticating user
-        const { userId } = await auth();
-        if (!userId) {
+        const session = await getServerSession();
+        if (!session?.userId) {
             throw new Error("Unauthenticated")
         }
+        const userId = session.userId;
 
         // gets first and last date of the selected period
         const dateRange = PeriodToDateRange(selectedPeriod);

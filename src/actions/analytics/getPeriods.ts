@@ -2,17 +2,18 @@
 
 import { Period } from "@/app/types/analytics";
 import prisma from "@/lib/prisma";
-import { auth } from "@clerk/nextjs/server"
+import { getServerSession } from "@/lib/auth";
 
 
 // returns array of periods, the number of months between first time the user's workflow started and current year
 export async function GetPeriods() {
 
     // authenticate user
-    const { userId } = await auth();
-    if (!userId) {
+    const session = await getServerSession();
+    if (!session?.userId) {
         throw new Error("Unauthenticated");
     }
+    const userId = session.userId;
 
     // getting first time the workflow started
     // it returns something like this

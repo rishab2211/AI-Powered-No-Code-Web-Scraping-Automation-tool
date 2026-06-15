@@ -6,7 +6,7 @@ import PeriodSelector from "./_components/PeriodSelector";
 import { Period } from "@/app/types/analytics";
 import { Skeleton } from "@/components/ui/skeleton";
 import { GetStatsCardsValues } from "@/actions/analytics/getStatsCardsValues";
-import { auth } from "@clerk/nextjs/server";
+import { getServerSession } from "@/lib/auth";
 import { CirclePlayIcon, CoinsIcon, WaypointsIcon } from "lucide-react";
 import StatCard from "./_components/StatCard";
 import { GetWorkflowExecutionStats } from "@/actions/analytics/getWorkflowExecutionStats";
@@ -70,8 +70,8 @@ const PeriodSelectorWrapper = async ({
 
 const StatsCards = async ({ selectedPeriod }: { selectedPeriod: Period }) => {
   // authenticating user
-  const { userId } = await auth();
-  if (!userId) {
+  const session = await getServerSession();
+  if (!session?.userId) {
     throw new Error("Unauthenticated");
   }
 

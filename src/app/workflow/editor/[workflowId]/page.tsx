@@ -1,7 +1,7 @@
 
 import { waitFor } from "@/lib/helper";
 import prisma from "@/lib/prisma";
-import { auth } from "@clerk/nextjs/server";
+import { getServerSession } from "@/lib/auth";
 import Editor from "../../_components/Editor";
 
 
@@ -12,11 +12,12 @@ const Page = async ({ params }: { params:{workflowId : string}}) => {
   
   const workflowId = resolvedParams.workflowId;
 
-  const { userId } = await auth();
+  const session = await getServerSession();
 
-  if (!userId) {
+  if (!session?.userId) {
     return <div>Unauthenticated</div>;
   }
+  const userId = session.userId;
 
   // await waitFor(5000);
 

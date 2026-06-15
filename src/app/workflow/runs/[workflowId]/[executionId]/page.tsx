@@ -1,7 +1,7 @@
 import { GetWorkflowExecutionWithPhases } from "@/actions/workflows/getWorkflowExecutionWithPhases";
 import Topbar from "@/app/workflow/_components/topbar/Topbar";
 import { waitFor } from "@/lib/helper";
-import { auth } from "@clerk/nextjs/server";
+import { getServerSession } from "@/lib/auth";
 import { Loader2Icon } from "lucide-react";
 import React, { Suspense } from "react";
 import ExecutionViewer from "./_components/ExecutionViewer";
@@ -12,21 +12,14 @@ export default async function ExecutionViewerPage({
 }: {
   params: { workflowId: string; executionId: string };
 }) {
-  // Await params at the beginning
-
-  // console.log("yeh hai workflowID" + params.workflowId);
-
-  const userId = await auth();
+  const session = await getServerSession();
 
   // this needs to await according to nextjs docs
   // else there will be warning
   const { executionId } = await params;
   const { workflowId } = await params;
 
-  // console.log(executionId);
-  // console.log(workflowId);
-
-  if (!userId) {
+  if (!session?.userId) {
     return <div>Unauthenticated</div>;
   }
 
@@ -44,8 +37,8 @@ async function ExecutionViewerPageWrapper({
 }: {
   executionId: string;
 }) {
-  const userId = await auth();
-  if (!userId) {
+  const session = await getServerSession();
+  if (!session?.userId) {
     return <div>Unauthenticated</div>;
   }
 

@@ -1,15 +1,16 @@
 "use server"
 
 import prisma from "@/lib/prisma";
-import { auth } from "@clerk/nextjs/server";
+import { getServerSession } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 
 export const DeleteCredential = async (name: string) => {
     try {
-        const { userId } = await auth();
-        if (!userId) {
+        const session = await getServerSession();
+        if (!session?.userId) {
             throw new Error("Unauthenticated");
         }
+        const userId = session.userId;
 
         const result = await prisma.credential.delete({
             where: {

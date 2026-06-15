@@ -1,18 +1,19 @@
 "use server"
 
 import prisma from "@/lib/prisma";
-import { auth } from "@clerk/nextjs/server"
+import { getServerSession } from "@/lib/auth";
 import parser from "cron-parser";
 import { revalidatePath } from "next/cache";
 import { parse } from "path";
 
 export async function UpdateCronWorkflow({ id, cron }: { id: string, cron: string }) {
 
-    const { userId } = await auth();
+    const session = await getServerSession();
 
-    if (!userId) {
+    if (!session?.userId) {
         throw new Error("unauthenticated");
     }
+    const userId = session.userId;
 
     try {
 

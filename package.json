@@ -9,7 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@clerk/nextjs": "^6.9.11",
     "@google/generative-ai": "^0.24.0",
     "@hookform/resolvers": "^3.10.0",
     "@prisma/client": "^6.2.1",
@@ -28,7 +27,9 @@
     "@radix-ui/react-tabs": "^1.1.2",
     "@radix-ui/react-tooltip": "^1.1.6",
     "@tanstack/react-query": "^5.64.1",
+    "@types/bcryptjs": "^2.4.6",
     "@xyflow/react": "^12.4.1",
+    "bcryptjs": "^3.0.3",
     "cheerio": "^1.0.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -37,6 +38,7 @@
     "date-fns": "^4.1.0",
     "date-fns-tz": "^3.2.0",
     "dotenv": "^16.4.7",
+    "jose": "^6.2.3",
     "lottie-react": "^2.4.0",
     "lucide-react": "^0.471.2",
     "motion": "^12.18.1",

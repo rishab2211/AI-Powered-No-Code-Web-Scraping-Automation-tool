@@ -3,7 +3,7 @@ import { Period } from "@/app/types/analytics";
 import { WorkflowExecutionStatus } from "@/app/types/Workflows";
 import { PeriodToDateRange } from "@/lib/helper";
 import prisma from "@/lib/prisma";
-import { auth } from "@clerk/nextjs/server";
+import { getServerSession } from "@/lib/auth";
 import { eachDayOfInterval, format } from "date-fns";
 
 export type Stats = Record<string, {
@@ -12,11 +12,12 @@ export type Stats = Record<string, {
 }>
 
 export async function GetWorkflowExecutionStats(period: Period) {
-    const { userId } = await auth();
+    const session = await getServerSession();
 
-    if (!userId) {
+    if (!session?.userId) {
         throw new Error("Unauthenticated");
     }
+    const userId = session.userId;
 
     const dateRange = PeriodToDateRange(period);
 

@@ -3,16 +3,17 @@
 import { WorkflowStatus } from "@/app/types/Workflows";
 import prisma from "@/lib/prisma";
 import { duplicateWorkflowSchema, duplicateWorkflowSchemaType } from "@/schema/workflow";
-import { auth } from "@clerk/nextjs/server";
+import { getServerSession } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 
 export async function DuplicateWorkflow(form: duplicateWorkflowSchemaType) {
 
-    const { userId } = await auth();
+    const session = await getServerSession();
 
-    if (!userId) {
+    if (!session?.userId) {
         throw new Error("Unauthenticated");
     }
+    const userId = session.userId;
 
 
     const { success, data } = duplicateWorkflowSchema.safeParse(form);

@@ -6,7 +6,7 @@ import prisma from "@/lib/prisma";
 import { ExecuteWorkflow } from "@/lib/workflow/executeWorkflow";
 import { FlowToExecutionPlan } from "@/lib/workflow/FlowToExecutionPlan";
 import { TaskRegistry } from "@/lib/workflow/task/Registry";
-import { auth } from "@clerk/nextjs/server";
+import { getServerSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 
 export async function RunWorkflow(form: {
@@ -17,11 +17,12 @@ export async function RunWorkflow(form: {
     console.log("inside runWorkflow");
 
 
-    const { userId } = await auth();
+    const session = await getServerSession();
 
-    if (!userId) {
+    if (!session?.userId) {
         throw new Error("unauthenticated");
     }
+    const userId = session.userId;
 
 
 

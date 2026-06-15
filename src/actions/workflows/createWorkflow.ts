@@ -1,7 +1,7 @@
 "use server"
 
 import { createWorkflowSchema, createWorkflowSchemaType } from "@/schema/workflow"
-import { auth } from "@clerk/nextjs/server";
+import { getServerSession } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { WorkflowStatus } from "@/app/types/Workflows";
 import { redirect } from "next/navigation";
@@ -16,12 +16,13 @@ export async function createWorkflow(form: createWorkflowSchemaType) {
         throw new Error("Invalid form data");
     }
 
-    const { userId } = await auth();
+    const session = await getServerSession();
 
 
-    if (!userId) {
+    if (!session?.userId) {
         throw new Error("Unauthenticated");
     }
+    const userId = session.userId;
 
     const intialWorkflow: { nodes: CustomNode[],edges: Edge[]}={
         nodes : [],
