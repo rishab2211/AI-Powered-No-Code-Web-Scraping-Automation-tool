@@ -1,91 +1,129 @@
-# 🚀 Ultimate Web Scraping Automation Tool 📊
+# 🚀 FlowCraft — AI-Powered No-Code Web Scraping Automation Tool
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) Empower your digital strategy! This tool enables you to monitor competitors’ websites, track pricing changes in real-time, gather market insights, and automate data collection workflows—all without manual effort.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js)](https://nextjs.org/)
+[![React Flow](https://img.shields.io/badge/Workflow-React_Flow-FF0072?logo=react)](https://reactflow.dev/)
+[![Gemini AI](https://img.shields.io/badge/AI-Google_Gemini_1.5-8E75B2?logo=google-gemini)](https://ai.google.dev/)
+[![Prisma](https://img.shields.io/badge/ORM-Prisma-2D3748?logo=prisma)](https://prisma.io/)
+
+**FlowCraft** is an intelligent, visual web automation and scraping platform. It enables engineers, analysts, and teams to build resilient browser automation workflows using an intuitive drag-and-drop node graph canvas—paired with **Google Gemini AI** to dynamically parse, understand, and extract unstructured web data without brittle CSS/XPath selectors.
 
 ---
 
-## ✨ Key Features
+## 🖼️ Visual Demo
 
-* **Automated Monitoring:** Keep tabs on competitor sites and pricing effortlessly.
-* **Real-Time Data:** Get up-to-the-minute information for timely decisions.
-* **Market Insights:** Gather crucial data to understand market trends.
-* **No-Code Workflow Builder:** Visually design complex scraping logic with drag-and-drop.
-* **AI-Enhanced Extraction:** Leverage AI for smarter and more resilient data retrieval.
-* **Secure & Scalable:** Built with robust authentication, secure credential management, and reliable data storage.
+<div align="center">
+  <img src="public/demo-assets/demo-ai-webscrapper.gif" alt="FlowCraft Demo" width="100%" />
+</div>
+
+---
+
+## ✨ Key Highlights
+
+- **Visual DAG Workflow Builder:** Design complex scraping logic with drag-and-drop nodes powered by `@xyflow/react`.
+- **AI-Enhanced Extraction:** Harness Google Gemini 1.5 LLM reasoning to extract structured JSON from raw HTML, immune to website layout changes.
+- **Headless Browser Execution:** Automated page navigation, typing, clicking, waiting, and scrolling via Puppeteer.
+- **Scheduled Cron Triggers:** Publish workflows and automate recurring execution with cron-parser scheduling and telemetry logs.
+- **Enterprise-Grade Security:** Encrypt sensitive third-party API keys and credentials with AES-256-CBC at rest.
+- **Modular Data Delivery:** Stream extracted data directly to custom webhook endpoints or export as structured JSON.
 
 ---
 
 ## 🛠️ Technology Stack
 
-* **Frontend:** Next.js (Dynamic UI, Server-Side Rendering)
-* **Authentication:** Clerk (Robust user management & security)
-* **State Management:** Tanstack ReactQuery (Advanced client-side data fetching & caching)
-* **Workflow Canvas:** Reactflow (Intuitive drag-and-drop interface)
-* **Database:** MySQL
-* **ORM:** Prisma (Efficient and type-safe database access)
-* **AI Integration:** Gemini (Enhanced data extraction capabilities)
+| Layer | Technologies |
+| :--- | :--- |
+| **Frontend & UI** | Next.js 15 (App Router), React 18, Tailwind CSS, Radix UI, Lucide Icons, Framer Motion |
+| **Workflow Canvas** | React Flow (`@xyflow/react`), TanStack React Query |
+| **Automation Engine** | Puppeteer (Headless Chrome), Cheerio |
+| **AI Integration** | Google Generative AI SDK (`@google/generative-ai` / Gemini 1.5 Flash) |
+| **Database & ORM** | SQLite (Default for zero-config local run) / PostgreSQL / MySQL via Prisma ORM |
+| **Authentication** | Custom stateless JWT with signed HTTP-only cookies (`jose`, `bcryptjs`) |
+| **Scheduling** | `cron-parser`, `cronstrue` |
 
 ---
 
-## 🖼️ Demo / Screenshots
-![Demo](public/demo-assets/demo-ai-webscrapper.gif)
+## 🚀 Quick Start Guide
+
+Follow these steps to set up and run FlowCraft on your local machine for development.
+
+### Prerequisites
+
+- **Node.js:** `v18.x` or later (tested on Node v20+)
+- **npm:** `v9.x` or later
+- **Git:** Version control system
+
+### Installation & Setup
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/rishab2211/AI-Powered-No-Code-Web-Scraping-Automation-tool.git
+   cd AI-Powered-No-Code-Web-Scraping-Automation-tool
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Configure environment variables:**
+   Copy the example environment template:
+   ```bash
+   cp .env.example .env
+   ```
+   Generate secure secrets for JWT and encryption:
+   ```env
+   NEXT_PUBLIC_APP_URL="http://localhost:3000"
+   DATABASE_URL="file:./dev.db"
+   JWT_SECRET="your_custom_jwt_secret_key_minimum_32_characters"
+   ENCRYPTION_SECRET_KEY="your_32_byte_aes_encryption_key_here"
+   API_SECRET="your_internal_api_secret_key_here"
+   GEMINI_API_KEY="your_google_gemini_api_key_here"
+   ```
+
+4. **Initialize database schema:**
+   Push the Prisma schema to create the local SQLite database:
+   ```bash
+   npx prisma db push
+   ```
+
+5. **Start local development server:**
+   ```bash
+   npm run dev
+   ```
+   Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ---
 
-## 🚀 Getting Started
+## ⚙️ Core Architecture & Functionality
 
-### Onboarding & Dashboard
+### 1. Visual Drag-and-Drop Node Canvas
+Choreograph execution graphs with specialized node types:
+- **Browser Nodes:** `Launch Browser`, `Navigate to URL`, `Scroll Page`.
+- **Interaction Nodes:** `Click Element`, `Fill Input`, `Wait for Element`.
+- **Extraction Nodes:** `Page to HTML`, `Extract Text via Selector`, `Extract Data with AI (Gemini)`.
+- **Delivery Nodes:** `Deliver via Webhook`, `JSON Storage`.
 
-1.  **Simple Signup:** Get started quickly using your Google account via Clerk.
-2.  **Free Trial Credits:** Receive **250 complimentary credits** upon signup to explore the platform's capabilities.
-3.  **Insightful Dashboard:**
-    * Monitor your remaining credit balance.
-    * View statistics about your created workflows.
-    * Track execution logs and results in real-time.
-
----
-
-## ⚙️ Core Functionality
-
-### Dynamic Workflow Builder
-
-* **Effortless Creation:** Simply provide a title and description to initiate a new workflow.
-
-### Powerful Visual Editor
-
-Build sophisticated automation logic with ease using the drag-and-drop canvas:
-
-* **User Interactions:** Automate actions like filling inputs, clicking buttons, navigating between pages, and scrolling.
-* **Data Extraction:**
-    * Select and retrieve specific HTML elements.
-    * Extract text content from elements.
-    * Utilize integrated **Gemini AI** for advanced, context-aware data extraction.
-* **Data Storage:** Define and manage JSON properties to structure your scraped data seamlessly.
-* **Control & Delivery:**
-    * Implement delays and timing controls within your workflow.
-    * Send execution results and extracted data to specified endpoints via **Webhooks**.
-
-### Execution & Automation
-
-* **Real-Time Monitoring:** Observe detailed logs and phase-wise execution results as your workflows run.
-* **Publish & Schedule:** Once your workflow is perfected, publish it and set up automated execution schedules using **cron jobs**.
+### 2. High-Level Architecture
+<div align="center">
+  <img src="public/demo-assets/high-level-architecture.png" alt="Architecture Diagram" width="100%" />
+</div>
 
 ---
 
-## 🔒 Security & Billing
+## 🔒 Security & Credential Management
 
-* **Secure Credential Management:** Integrations and sensitive data are handled with end-to-end encryption.
-* **Flexible Billing:**
-    * Choose from various credit packages based on your usage needs.
-    * Purchase additional credits easily.
-    * *(Upcoming: Integrated payment gateway for seamless transactions).*
+- All sensitive credentials (such as external Gemini API keys and basic auth passwords) are encrypted using AES-256-CBC with unique initialization vectors before writing to the database.
+- Route handlers enforce strict JWT validation and ownership checks so users can only view, edit, and trigger their own automation pipelines.
 
 ---
 
-## 🗺️ What’s Next? (Roadmap)
+## 📖 Comprehensive Documentation
 
-We're constantly working to enhance the tool. Here's what's planned:
+For exhaustive architecture specifications, database schemas, API references, operational runbooks, and design decisions (ADR), refer to [`DOCUMENTATION.md`](DOCUMENTATION.md).
 
-* **💳 Payment Gateway Integration:** Implementing Stripe/LemonSqueezy (or similar) for smooth in-app credit purchases.
-* **🛡️ Advanced Scraping Enhancements:** Developing techniques to bypass captchas and common anti-scraping measures more effectively.
-* **🤖 Autonomous AI Agent:** Building an intelligent agent capable of autonomously creating and managing scraping tasks based on high-level goals.
+---
+
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE).
