@@ -10,33 +10,37 @@ export async function ExtractDataWithAiExecutor(environment: ExecutionEnvironmen
         const credentials = environment.getInput("Credentials");
         if (!credentials) {
             environment.log.error("input->credentials not found");
+            return false;
         }
 
         const prompt = environment.getInput("Prompt");
         if (!prompt) {
-            environment.log.error("input->credentials not found")
+            environment.log.error("input->prompt not found");
+            return false;
         }
 
         const content = environment.getInput("Content");
         if (!content) {
-            environment.log.error("input->content not found")
+            environment.log.error("input->content not found");
+            return false;
         }
 
         const propertyName = environment.getInput("Property name");
         if (!propertyName) {
-            environment.log.info("input->property name not provided")
+            environment.log.info("input->property name not provided");
         }
 
         // Get credentials from DB
         const credential = await prisma.credential.findUnique({
             where: { id: credentials }
-        })
+        });
 
         if (!credential) {
-            environment.log.error("credential not found")
+            environment.log.error("credential not found");
+            return false;
         }
 
-        const plainCredentialValue = symmetricDecrypt(credential?.value!)
+        const plainCredentialValue = symmetricDecrypt(credential.value);
         if (!plainCredentialValue) {
             environment.log.error("cannot decrypt credential");
             return false;

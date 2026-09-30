@@ -2,21 +2,8 @@ import { ExecutionPhaseStatus, WorkflowExecutionPlan, WorkflowExecutionStatus, W
 import prisma from "@/lib/prisma";
 import { ExecuteWorkflow } from "@/lib/workflow/executeWorkflow";
 import { TaskRegistry } from "@/lib/workflow/task/Registry";
-import parser from "cron-parser"
-
-import { timingSafeEqual } from "crypto";
-
-function isValidSecret(secret: string) {
-    const API_SECRET = process.env.API_SECRET;
-    if (!API_SECRET) return false;
-
-    try {
-
-        return timingSafeEqual(Buffer.from(secret), Buffer.from(API_SECRET));
-    } catch (err: any) {
-        return false;
-    }
-}
+import parser from "cron-parser";
+import { isValidSecret } from "@/lib/apiAuth";
 
 export async function GET(req: Request) {
     const authHeader = req.headers.get("authorization");

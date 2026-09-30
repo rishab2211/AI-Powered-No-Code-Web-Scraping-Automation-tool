@@ -4,7 +4,6 @@ import prisma from "@/lib/prisma";
 import { getServerSession } from "@/lib/auth";
 import parser from "cron-parser";
 import { revalidatePath } from "next/cache";
-import { parse } from "path";
 
 export async function UpdateCronWorkflow({ id, cron }: { id: string, cron: string }) {
 

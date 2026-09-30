@@ -13,10 +13,6 @@ export async function RunWorkflow(form: {
     workflowId: string;
     flowDefinition?: string;
 }) {
-
-    console.log("inside runWorkflow");
-
-
     const session = await getServerSession();
 
     if (!session?.userId) {

@@ -13,7 +13,6 @@ import { Browser, Page } from "puppeteer";
 import { Edge } from "@xyflow/react";
 import { LogCollector } from "@/app/types/log";
 import { createLogCollector } from "../log";
-import next from "next";
 
 export async function ExecuteWorkflow(executionId: string, nextRunAt?: Date) {
 
@@ -57,11 +56,6 @@ export async function ExecuteWorkflow(executionId: string, nextRunAt?: Date) {
     let creditsConsumed = 0;
     let executionFailed = false;
     for (const phase of execution.phases) {
-        // await waitFor(3000);
-
-        //log collector for each phase
-        const logCollector = createLogCollector();
-
         // execute phase
         const phaseExecution = await executeWorkflowPhase(phase, environment, edges, execution.userId);
 
@@ -180,9 +174,6 @@ async function executeWorkflowPhase(phase: ExecutionPhase, environment: Environm
     });
 
     const creditsRequired = TaskRegistry[node.data.type].credits;
-
-    console.log(`Executing phase ${phase.name} with ${creditsRequired} credtis required`);
-
 
     // decrement  user balance (with required credits)
     const creditsSuccess = await decrementCredits(userId, creditsRequired, logCollector);
