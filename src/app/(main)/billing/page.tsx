@@ -1,5 +1,5 @@
 import React, { Suspense } from "react";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { 
@@ -10,85 +10,53 @@ import {
   Sparkles,
 } from "lucide-react";
 import { CreditsPurchase } from "./_components/CreditsPurchase";
+import { getServerSession } from "@/lib/auth";
+import prisma from "@/lib/prisma";
+import { redirect } from "next/navigation";
 
-interface UserBalance {
+interface UserBalanceData {
   available: number;
   total_purchased: number;
   total_used: number;
 }
 
-interface CreditsPack {
-  id: string;
-  name: string;
-  label: string;
-  price: number;
-  credits: number;
-  popular?: boolean;
-  bonus?: number;
-}
+async function GetUserBalance(userId: string): Promise<UserBalanceData> {
+  const balance = await prisma.userBalance.findUnique({
+    where: { userId },
+  });
 
-enum PackId {
-  SMALL = "starter",
-  MEDIUM = "professional", 
-  LARGE = "professional_annual",
-  ENTERPRISE = "enterprise"
-}
+  const executions = await prisma.workflowExecution.aggregate({
+    where: { userId },
+    _sum: {
+      creditsConsumed: true,
+    },
+  });
 
-// Mock data with pricing 
-const CreditsPack: CreditsPack[] = [
-  {
-    id: PackId.SMALL,
-    name: "Starter Pack",
-    label: "1,000 Credits",
-    price: 0, // Free tier equivalent
-    credits: 1000,
-  },
-  {
-    id: PackId.MEDIUM,
-    name: "Professional Pack", 
-    label: "10,000 Credits",
-    price: 29, // Monthly professional plan
-    credits: 10000,
-    popular: true,
-    bonus: 1000,
-  },
-  {
-    id: PackId.LARGE,
-    name: "Professional Annual",
-    label: "120,000 Credits", 
-    price: 290, // Yearly professional (10 months + 2 free)
-    credits: 120000,
-    bonus: 24000, // 20% bonus for annual
-  },
-  {
-    id: PackId.ENTERPRISE,
-    name: "Enterprise Pack",
-    label: "Unlimited Credits",
-    price: 199, // Monthly enterprise plan
-    credits: 999999,
-    bonus: 0,
-  },
-];
+  const available = balance?.credits ?? 0;
+  const totalUsed = executions._sum.creditsConsumed ?? 0;
+  const totalPurchased = available + totalUsed;
 
-// Mock functions (replace with your actual functions)
-const GetAvailableCredits = async (): Promise<UserBalance> => {
-  // Simulate API call
-  await new Promise(resolve => setTimeout(resolve, 1000));
   return {
-    available: 2450,
-    total_purchased: 10000,
-    total_used: 7550,
+    available,
+    total_purchased: totalPurchased,
+    total_used: totalUsed,
   };
-};
+}
 
 const CreateCountupWrapper: React.FC<{ value: number }> = ({ value }) => {
   return <span>{value.toLocaleString()}</span>;
 };
 
-// Enhanced Balance Card Component
 async function BalanceCard() {
-  const userBalance = await GetAvailableCredits();
-  const usagePercentage = ((userBalance.total_used / userBalance.total_purchased) * 100).toFixed(1);
+  const session = await getServerSession();
+  if (!session?.userId) {
+    redirect("/sign-in");
+  }
+
+  const userBalance = await GetUserBalance(session.userId);
+  const usagePercentage = userBalance.total_purchased > 0
+    ? ((userBalance.total_used / userBalance.total_purchased) * 100).toFixed(1)
+    : "0.0";
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -188,10 +156,7 @@ async function BalanceCard() {
   );
 }
 
-// Main Billing Page Component
-interface BillingPageProps {}
-
-const BillingPage: React.FC<BillingPageProps> = () => {
+export default function BillingPage() {
   return (
     <div className="max-w-7xl mx-auto p-6 space-y-8">
       {/* Header */}
@@ -220,6 +185,4 @@ const BillingPage: React.FC<BillingPageProps> = () => {
       <CreditsPurchase />
     </div>
   );
-};
-
-export default BillingPage;
+}

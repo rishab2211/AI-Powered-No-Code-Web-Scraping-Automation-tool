@@ -12,44 +12,49 @@ import {
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Button } from "@/components/ui/button";
-import { useMutation } from "@tanstack/react-query";
-import { AlertCircle, Badge, CheckCircle, Coins, CoinsIcon, CreditCard, Sparkles, Zap } from "lucide-react";
-import { Suspense, useState } from "react";
-import { toast } from "sonner";
-import React from "react";
+import { Badge } from "@/components/ui/badge";
+import { AlertCircle, CheckCircle, Coins, CreditCard, Sparkles, Zap } from "lucide-react";
+import React, { useEffect, useState } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Skeleton } from "@/components/ui/skeleton";
-
+import { PurchaseCredits } from "@/actions/billing/purchaseCredits";
+import { toast } from "sonner";
 
 export const CreditsPurchase: React.FC = () => {
-  const [selectedPack, setSelectedPack] = React.useState<PackId>(PackId.MEDIUM);
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [error, setError] = React.useState<string | null>(null);
-  const [success, setSuccess] = React.useState(false);
+  const [selectedPack, setSelectedPack] = useState<PackId>(PackId.MEDIUM);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("success") === "true") {
+        setSuccess(true);
+        toast.success("Payment successful! Your credits have been updated.");
+      }
+    }
+  }, []);
 
   const handlePurchase = async () => {
     setIsLoading(true);
     setError(null);
-    
+
     try {
-    
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Simulate random success/failure for demo
-      if (Math.random() > 0.3) {
-        setSuccess(true);
-        setTimeout(() => setSuccess(false), 3000);
-      } else {
-        throw new Error("Payment processing failed. Please try again.");
-      }
+      await PurchaseCredits(selectedPack);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An unexpected error occurred");
+      const msg = err instanceof Error ? err.message : "Payment processing failed";
+      // Next.js redirect in server actions throws NEXT_REDIRECT which is expected
+      if (msg.includes("NEXT_REDIRECT")) {
+        return;
+      }
+      setError(msg);
+      toast.error(msg);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const selectedPackData = CreditsPack.find(pack => pack.id === selectedPack);
+  const selectedPackData = CreditsPack.find((pack) => pack.id === selectedPack);
 
   return (
     <Card className="border-0 shadow-lg">
@@ -61,10 +66,10 @@ export const CreditsPurchase: React.FC = () => {
           Purchase Credits
         </CardTitle>
         <CardDescription className="text-base">
-          Choose the perfect credit pack for your automation needs. All purchases are instant and secure.
+          Choose the credit pack that best fits your workflow requirements. Purchases are processed securely via Stripe.
         </CardDescription>
       </CardHeader>
-      
+
       <CardContent className="space-y-6">
         <RadioGroup
           onValueChange={(value) => setSelectedPack(value as PackId)}
@@ -86,9 +91,9 @@ export const CreditsPurchase: React.FC = () => {
                   Most Popular
                 </Badge>
               )}
-              
+
               <RadioGroupItem value={pack.id} id={pack.id} className="mt-1" />
-              
+
               <div className="flex-1 space-y-1">
                 <div className="flex items-center justify-between">
                   <Label htmlFor={pack.id} className="text-lg font-semibold cursor-pointer">
@@ -96,30 +101,22 @@ export const CreditsPurchase: React.FC = () => {
                   </Label>
                   <div className="text-right">
                     <div className="text-2xl font-bold text-neutral-900">
-                      {pack.price === 0 ? "Free" : `${pack.price}`}
+                      ${(pack.price / 100).toFixed(2)}
                     </div>
-                    {pack.bonus > 0 && (
+                    {pack.bonus && pack.bonus > 0 ? (
                       <div className="text-sm text-emerald-600 font-medium">
                         +{pack.bonus.toLocaleString()} bonus credits
                       </div>
-                    )}
+                    ) : null}
                   </div>
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <span className="text-neutral-600">{pack.label}</span>
-                  {pack.credits < 999999 && (
-                    <div className="flex items-center gap-2 text-sm text-neutral-500">
-                      <Zap className="w-4 h-4" />
-                      {pack.price === 0 ? "Free" : `${(pack.price / pack.credits).toFixed(4)} per credit`}
-                    </div>
-                  )}
-                  {pack.credits >= 999999 && (
-                    <div className="flex items-center gap-2 text-sm text-emerald-600">
-                      <Sparkles className="w-4 h-4" />
-                      Unlimited usage
-                    </div>
-                  )}
+                  <div className="flex items-center gap-2 text-sm text-neutral-500">
+                    <Zap className="w-4 h-4" />
+                    ${((pack.price / 100) / pack.credits).toFixed(4)} per credit
+                  </div>
                 </div>
               </div>
             </div>
@@ -132,28 +129,27 @@ export const CreditsPurchase: React.FC = () => {
             <h4 className="font-semibold text-neutral-900">Purchase Summary</h4>
             <div className="space-y-1 text-sm">
               <div className="flex justify-between">
-                <span className="text-neutral-600">Credits:</span>
+                <span className="text-neutral-600">Base Credits:</span>
                 <span className="font-medium">{selectedPackData.credits.toLocaleString()}</span>
               </div>
-              {selectedPackData.bonus && (
+              {selectedPackData.bonus && selectedPackData.bonus > 0 ? (
                 <div className="flex justify-between">
                   <span className="text-neutral-600">Bonus Credits:</span>
-                  <span className="font-medium text-emerald-600">+{selectedPackData.bonus.toLocaleString()}</span>
+                  <span className="font-medium text-emerald-600">
+                    +{selectedPackData.bonus.toLocaleString()}
+                  </span>
                 </div>
-              )}
+              ) : null}
               <div className="flex justify-between border-t border-neutral-200 pt-2">
                 <span className="text-neutral-600">Total Credits:</span>
                 <span className="font-bold">
-                  {selectedPackData.credits >= 999999 
-                    ? "Unlimited" 
-                    : (selectedPackData.credits + (selectedPackData.bonus || 0)).toLocaleString()
-                  }
+                  {(selectedPackData.credits + (selectedPackData.bonus || 0)).toLocaleString()}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-neutral-600">Amount:</span>
+                <span className="text-neutral-600">Total Amount:</span>
                 <span className="font-bold text-lg">
-                  {selectedPackData.price === 0 ? "Free" : `${selectedPackData.price}`}
+                  ${(selectedPackData.price / 100).toFixed(2)}
                 </span>
               </div>
             </div>
@@ -173,34 +169,27 @@ export const CreditsPurchase: React.FC = () => {
           <Alert className="border-green-200 bg-green-50">
             <CheckCircle className="w-4 h-4 text-green-600" />
             <AlertDescription className="text-green-800">
-              Credits purchased successfully! Your balance has been updated.
+              Payment completed successfully! Your credit balance has been updated.
             </AlertDescription>
           </Alert>
         )}
       </CardContent>
-      
+
       <CardFooter className="pt-6">
-        <Button 
+        <Button
           className="w-full h-12 text-lg font-semibold bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-          disabled={isLoading || selectedPackData?.price === 0}
+          disabled={isLoading}
           onClick={handlePurchase}
         >
-          {selectedPackData?.price === 0 ? (
-            <>
-              <CheckCircle className="mr-2" />
-              Already Active - Free Plan
-            </>
-          ) : isLoading ? (
+          {isLoading ? (
             <>
               <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
-              Processing Payment...
+              Redirecting to Stripe...
             </>
           ) : (
             <>
               <CreditCard className="mr-2" />
-              Purchase {selectedPackData?.credits >= 999999 
-                ? "Unlimited Credits" 
-                : `${selectedPackData?.credits.toLocaleString()} Credits`}
+              Purchase {(selectedPackData?.credits ?? 0).toLocaleString()} Credits
             </>
           )}
         </Button>
@@ -208,4 +197,3 @@ export const CreditsPurchase: React.FC = () => {
     </Card>
   );
 };
-
