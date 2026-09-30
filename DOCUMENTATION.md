@@ -332,7 +332,7 @@ erDiagram
         DateTime nextRunAt
         String cron
         DateTime createdAt
-        DateTime updateAt
+        DateTime updatedAt
     }
 
     WorkflowExecution {

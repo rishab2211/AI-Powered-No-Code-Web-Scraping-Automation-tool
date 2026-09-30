@@ -96,7 +96,7 @@ const WorkflowCard = ({ workflow }: WorkflowCardProps) => {
 
               </div>
               <div className="text-sm text-gray-500">
-                {workflow.creditCost} credits • Updated {formatDistanceToNow(workflow.updateAt, { addSuffix: true })}
+                {workflow.creditCost} credits • Updated {formatDistanceToNow(workflow.updatedAt, { addSuffix: true })}
               </div>
             </div>
           </div>
