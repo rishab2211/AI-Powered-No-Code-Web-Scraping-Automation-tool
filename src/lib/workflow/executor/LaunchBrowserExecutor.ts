@@ -1,40 +1,37 @@
-import { Environment, ExecutionEnvironment } from "@/app/types/executor";
-import { waitFor } from "@/lib/helper";
-import puppeteer from "puppeteer"
+import { ExecutionEnvironment } from "@/app/types/executor";
+import puppeteer from "puppeteer";
 import { LaunchBrowserTask } from "../task/LaunchBrowserTask";
-import { log } from "console";
 
 export async function LaunchBrowserExecutor(environment: ExecutionEnvironment<typeof LaunchBrowserTask>): Promise<boolean> {
     try {
-
         const websiteUrl = environment.getInput("Website URL");
-        console.log("Website URL :", websiteUrl);
 
         const browser = await puppeteer.launch({
-            headless: false, // for testing, means puppeteer will lauch a visible browser window
-            // chromium browser by default is not working correctly thats why we run it in google-chrome
-            executablePath: '/usr/bin/google-chrome',
+            headless: process.env.PUPPETEER_HEADLESS !== "false",
+            args: [
+                "--no-sandbox",
+                "--disable-setuid-sandbox",
+                "--disable-dev-shm-usage",
+                "--disable-gpu",
+                "--single-process",
+            ],
+            executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
         });
         environment.setBrowser(browser);
 
-        environment.log.info("Browser started succesfully!");
+        environment.log.info("Browser started successfully!");
         const page = await browser.newPage();
 
-        console.log("THIS IS BROWSER PAGE INSTANCE: ", page);
-
-        const navResponse = await page.goto(websiteUrl);
-
-        console.log("THIS IS NAVIGATION RESPONSE");
-        console.log(navResponse);
+        await page.goto(websiteUrl);
 
         environment.setPage(page);
-        environment.log.info(`Opened page at ${websiteUrl}`)
+        environment.log.info(`Opened page at ${websiteUrl}`);
 
-        await waitFor(2000);
+        await page.waitForNetworkIdle({ timeout: 5000 }).catch(() => {});
 
         return true;
     } catch (err: any) {
-        environment.log.error(err.message)
+        environment.log.error(err.message);
         return false;
     }
 }
