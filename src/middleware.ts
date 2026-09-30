@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { verifyToken } from "@/lib/auth";
+import { verifyToken } from "@/lib/jwt";
 
 const PUBLIC_ROUTES = ["/sign-in", "/sign-up", "/"];
 const PUBLIC_PREFIXES = ["/api/auth"];

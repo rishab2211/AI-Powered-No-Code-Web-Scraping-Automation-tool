@@ -2,7 +2,7 @@
 
 import { PackId, getCreditsPack } from "@/app/types/billing";
 import { getServerSession } from "@/lib/auth";
-import { stripe } from "@/lib/paymentGateway/paymentGateway";
+import { getStripe } from "@/lib/paymentGateway/paymentGateway";
 import { getAppUrl } from "@/lib/helper";
 import { redirect } from "next/navigation";
 
@@ -22,6 +22,7 @@ export async function PurchaseCredits(packId: PackId) {
     }
 
     const appUrl = getAppUrl("");
+    const stripe = getStripe();
     const checkoutSession = await stripe.checkout.sessions.create({
         mode: "payment",
         payment_method_types: ["card"],

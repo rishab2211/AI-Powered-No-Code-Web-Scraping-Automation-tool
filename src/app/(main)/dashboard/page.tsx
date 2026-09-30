@@ -15,7 +15,7 @@ import { GetCreditsUsageInPeriod } from "@/actions/analytics/getCreditsUsageInPe
 import CreditsUsageChart from "./_components/CreditsUsageChart";
 
 type Prop = {
-  searchParams: { month?: string; year?: string };
+  searchParams: Promise<{ month?: string; year?: string }>;
 };
 
 const page = async ({ searchParams }: Prop) => {

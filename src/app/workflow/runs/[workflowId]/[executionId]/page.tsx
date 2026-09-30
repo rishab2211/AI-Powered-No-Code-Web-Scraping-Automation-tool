@@ -10,7 +10,7 @@ import NotFound from "@/app/not-found";
 export default async function ExecutionViewerPage({
   params,
 }: {
-  params: { workflowId: string; executionId: string };
+  params: Promise<{ workflowId: string; executionId: string }>;
 }) {
   const session = await getServerSession();
 

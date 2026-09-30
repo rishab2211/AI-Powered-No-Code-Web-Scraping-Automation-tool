@@ -5,7 +5,7 @@ import { getServerSession } from "@/lib/auth";
 import Editor from "../../_components/Editor";
 
 
-const Page = async ({ params }: { params:{workflowId : string}}) => {
+const Page = async ({ params }: { params: Promise<{ workflowId: string }> }) => {
 
   // we need to await the params here as it is resloving as promise
   const resolvedParams = await params;

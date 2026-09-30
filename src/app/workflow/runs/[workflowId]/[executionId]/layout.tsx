@@ -5,18 +5,15 @@ import { RunExecutionSidebar } from "./_components/RunExecutionSidebar";
 import { GetWorkflowExecutionWithPhases } from "@/actions/workflows/getWorkflowExecutionWithPhases";
 import NotFound from "@/app/not-found";
 
-type ExecutionData = Awaited<ReturnType<typeof GetWorkflowExecutionWithPhases>>;
 const layout = async ({
   children,
   params,
-  initialData,
 }: {
   children: ReactNode;
-  params: {
+  params: Promise<{
     executionId: string;
     workflowId: string;
-  };
-  initialData: ExecutionData;
+  }>;
 }) => {
   const { workflowId } = await params;
   const { executionId } = await params;

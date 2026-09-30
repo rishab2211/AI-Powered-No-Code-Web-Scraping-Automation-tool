@@ -1,7 +1,9 @@
-import { stripe } from "@/lib/paymentGateway/paymentGateway";
+import { getStripe } from "@/lib/paymentGateway/paymentGateway";
 import prisma from "@/lib/prisma";
 import { getCreditsPack, PackId } from "@/app/types/billing";
 import Stripe from "stripe";
+
+export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
     const body = await req.text();
@@ -14,6 +16,7 @@ export async function POST(req: Request) {
     let event: Stripe.Event;
 
     try {
+        const stripe = getStripe();
         event = stripe.webhooks.constructEvent(
             body,
             signature,

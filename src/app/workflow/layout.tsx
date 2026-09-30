@@ -6,6 +6,8 @@ interface LayoutProps {
   children: ReactNode;
 }
 
+export const dynamic = "force-dynamic";
+
 const Layout = ({ children }: LayoutProps) => {
   return (
     <div className="flex min-h-screen w-full flex-col">
